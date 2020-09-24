@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  api:
+    image: "node:14-alpine"
+    command: yarn start:dev
+    env_file:
+      - $PWD/.env
+    environment:
+      - NODE_SCRIPT=./dist/server/cjs.js
+    secrets:
+      - postgres
+    volumes:
+      - $PWD/node_modules:/node/node_modules
+      - $PWD/dist:/node/dist
+      - $PWD/package.json:/node/package.json
+      - $PWD/tsconfig.json:/node/tsconfig.json
+    working_dir: /node

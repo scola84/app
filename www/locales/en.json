@@ -1,0 +1,7 @@
+{
+  "cases": "Installations",
+  "auth": {
+    "username": "Username"
+  },
+  "404": "The path \"{path}\" could not be found."
+}

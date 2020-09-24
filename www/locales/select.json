@@ -1,0 +1,12 @@
+{
+  "data": {
+    "test1": [{
+      "text": "Locaties",
+      "value": "locs"
+    }, {
+      "text": "Installaties",
+      "value": "cases",
+      "selected": true
+    }]
+  } 
+}

@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  nginx:
+    image: "nginx:1-alpine"
+    ports:
+      - "3000:3000"
+    restart: always
+    volumes:
+      - $PWD/.docker/nginx/conf.d:/etc/nginx/conf.d
+      - $PWD/www:/nginx
+      - $PWD/dist/client:/nginx/dist/client

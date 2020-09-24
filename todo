@@ -1,0 +1,51 @@
+// create models
+// split view
+
+
+
+// list
+// add/set/del
+// pagination + swipe
+// search
+// small/wide
+// select multiple
+// button vs list item
+
+// open popout through event
+// input with popout (large select)
+// return value of popout
+// review all elements
+
+// authorize
+//  return credentials from Authorizer.authorize
+//  then password can be sent along request
+// open popout by default? or modal...
+// pass input/init from fetch to auth to resolve/reject based on scope
+//  server must return the scope of the authorization
+
+// profile
+//   store tabs toggle etc.
+//   store settings in profile, but save only at will
+//   Profile.get/set/del/add + endpoints (list + object)
+
+// task + task group with line
+
+// ARIA
+// arrows for menu/tab
+// use open for dialog, hidden for nav etc.
+
+// nav/aside flash onload at mobile
+//   animations?
+// use arrow on popout (not absolute)
+// input disabled
+// rerender on language change (directive?)
+// event-stream
+// display: contents
+
+// fix ts-lit-plugin in tsconfig.json
+
+// view: ondisconnectedcallbacK: remove entry from url
+// implement splitter, then nest detail view inside list view
+// implement tooltip
+
+// try to recreate Sonos or Notes
