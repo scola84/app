@@ -6,7 +6,7 @@ import { strings } from '../common'
 
 const server = createServer({
   formatter: {
-    defaultLocale: 'nl',
+    lang: 'nl',
     strings
   },
   patterns: process.env.SERVICES?.split(':'),

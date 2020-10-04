@@ -12,8 +12,8 @@ createClient({
   dom: {
     body: html`
       <scola-app
-        style="background: center/cover url(/images/sunflowers3.jpg);"
-        theme="scola-light"
+        style="background: center/cover url(/images/spices.jpg);"
+        theme="scola-glass"
       >
         <me-aside slot="aside"></me-aside>
       </scola-app>
@@ -21,7 +21,7 @@ createClient({
     title: 'Mijn Herman'
   },
   formatter: {
-    defaultLocale: 'nl',
+    lang: 'nl',
     strings
   },
   views: [

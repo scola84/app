@@ -1,10 +1,12 @@
 import {
-  FormFillInputElement,
+  FormFillElement,
   customElement
 } from '@scola/lib'
 
 @customElement('scola-postcodenl')
-export class PostcodeNLElement extends FormFillInputElement {
+export class PostcodeNLElement extends FormFillElement {
+  public wait = true
+
   public get postalCodeElement (): HTMLInputElement | null {
     return this.querySelector('input[name="postal_code"]')
   }
@@ -13,10 +15,15 @@ export class PostcodeNLElement extends FormFillInputElement {
     return this.querySelector('input[name="address_level2"]')
   }
 
+  public constructor () {
+    super()
+    this.addEventListener('scola-input', this.handleInput.bind(this))
+  }
+
   protected handleInput (event: Event): void {
     if (
-      event.target !== this.postalCodeElement &&
-      event.target !== this.addressLevel2Element
+      event.target !== this.postalCodeElement?.parentElement &&
+      event.target !== this.addressLevel2Element?.parentElement
     ) {
       return
     }
@@ -28,6 +35,7 @@ export class PostcodeNLElement extends FormFillInputElement {
       return
     }
 
-    super.handleInput(event)
+    event.cancelBubble = true
+    this.fetchRequest()
   }
 }

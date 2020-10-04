@@ -86,19 +86,20 @@ export class AsideElement extends PanelElement {
           <scola-view-panel hidden id="tab-help" width="small">
             <scola-bar slot="header">
               <span slot="text">Help</span>
-              <scola-view-panel-buttons
-                at-large
-                at-medium
-                no-home
-                slot="buttons"
-              ></scola-view-panel-buttons>
+              <scola-icon-button at-large at-medium slot="buttons" event="scola-view-move-backward">
+                <scola-icon name="arrow-left"></scola-icon>
+              </scola-icon-button>
+              <scola-icon-button at-large at-medium slot="buttons" event="scola-view-move-forward">
+                <scola-icon name="arrow-right"></scola-icon>
+              </scola-icon-button>
             </scola-bar>
             <scola-bar at-small slot="footer">
-              <scola-view-panel-buttons
-                at-small
-                no-home
-                slot="buttons"
-              ></scola-view-panel-buttons>
+              <scola-icon-button at-small slot="buttons" event="scola-view-move-backward">
+                <scola-icon name="arrow-left"></scola-icon>
+              </scola-icon-button>
+              <scola-icon-button at-small slot="buttons" event="scola-view-move-forward">
+                <scola-icon name="arrow-right"></scola-icon>
+              </scola-icon-button>
             </scola-bar>
             <scola-view id="help" base="/api/help"></scola-view>
           </scola-view-panel>

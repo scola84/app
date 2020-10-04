@@ -1,5 +1,9 @@
 {
   "data": {
+    "theme": [{
+      "text": "jaja",
+      "value": "light1"
+    }],
     "test": "cases",
     "test1": "locs"
   }
