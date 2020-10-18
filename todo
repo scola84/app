@@ -1,29 +1,40 @@
-verwijderen van tickets
+view
+view-panel
+button
+tab
+view-tab
+tab-button
+button stack
+increase width of panels
 
-// input file with custom styling?
-// input range
-// input color
-// input disabled
-lock form when sending
+fix properties: translucent, outside-line, --scola-dark-shadow-line etc.
+add default slot element etc to nodeelement
 
-icons in input?
-  icon loading
-  test with eye for password?
-  test with cross for clear?
+set colors of scrollbar etc correctly
+line shadow for translucent fill
+remove template from view
+icon loading (spin)
+add themes
+move helpers
 
-review all elements
-  do not use :not() etc.? just put no-etc. at the end
-// fold if statements into one: popout handleKeydown
-// maybe remove buttons
+form-fill/submit
+// lock form when sending
+// test clear all inputs
+// test setdata with all inputs
+// value getter
+rename setValueText in inputs
 
-position of popout (top right left bottom of screen)
-test with nested menu
-nested popouts (agree + agree in iOS)
+popout
+dialog
+// position of popout (top right left bottom of screen)
+// test with nested menu
+// nested popouts (agree + agree in iOS)
 
-// split view
-// aside is visible on mobile
-// nav/aside flash onload at mobile
-//   animations?
+alert
+app
+auth
+input-popout
+input-file with dragndrop
 
 // cap queuer stream size
 // reverse lookup of strings
@@ -55,21 +66,33 @@ const auth = {
 //   store settings in profile, but save only at will
 //   Profile.get/set/del/add + endpoints (list + object)
 
-// task + task group with line
-
 // ARIA
-// arrows for menu/tab
 
 // event-stream
 
 // fix ts-lit-plugin in tsconfig.json
 
 // view: ondisconnectedcallbacK: remove entry from url
-// implement splitter, then nest detail view inside list view
 // implement tooltip
 
 // create something like:
 // https://material.io/components/menus#exposed-dropdown-menu (font picker)
 // https://material.io/design/color/dark-theme.html#ui-application (KPI)
-
 // try to recreate Sonos or Notes
+
+/* @media not all and (max-width: 1024px) {
+  slot[name="after"],
+  slot[name="after"]::slotted(*) {
+    position: relative;
+  }
+
+  slot[name="before"] {
+    position: relative;
+  }
+}
+
+@media (min-width: 768px) {
+  slot[name="before"]::slotted(*) {
+    position: relative;
+  }
+} */

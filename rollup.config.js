@@ -3,6 +3,7 @@ import gzip from 'rollup-plugin-gzip'
 import livereload from 'rollup-plugin-livereload'
 import minify from 'rollup-plugin-minify-html-literals'
 import resolve from '@rollup/plugin-node-resolve'
+import svg from 'rollup-plugin-svgo'
 import terser from 'rollup-plugin-terser'
 import typescript from '@rollup/plugin-typescript'
 import pkg from './package.json'
@@ -19,6 +20,12 @@ export default [{
     minify(),
     resolve({
       mainFields: ['browser', 'main', 'module']
+    }),
+    svg({
+      plugins: [{
+        removeDimensions: false,
+        removeViewBox: false
+      }]
     }),
     typescript(),
     process.argv.includes('-w') ? {} : gzip(),

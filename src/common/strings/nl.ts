@@ -22,10 +22,20 @@ export default {
     unknown: 'Er is een onbekende fout opgetreden.'
   },
   input: {
+    color: `{count, plural,
+      =0 {Selecteer een kleur...}
+      =1 {{red}, {green}, {blue}}
+    }`,
+    file: `{count, plural,
+      =0 {Selecteer een bestand...}
+      =1 {{name} ({size, number, ::compact-short}B)}
+      other {# bestanden geselecteerd ({size, number, ::compact-short}B)}
+    }`,
     popout: `{count, plural,
-      =0 {Maak een selectie...}
+      =0 {Selecteer een item...}
       =1 {{values}}
-      other {{values} en # andere...}}
-    `
+      other {# items geselecteerd...}
+    }`,
+    range: '{value}%'
   }
 }
