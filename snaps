@@ -1,0 +1,264 @@
+/* @media not all and (max-width: 1024px) {
+  slot[name="after"],
+  slot[name="after"]::slotted(*) {
+    position: relative;
+  }
+
+  slot[name="before"] {
+    position: relative;
+  }
+}
+
+@media (min-width: 768px) {
+  slot[name="before"]::slotted(*) {
+    position: relative;
+  }
+} */
+
+
+      
+      <scola-app flow="column" width="max" height="max" type="outer">
+        <scola-panel slot="before" id="menu" width="max" height="small" fill="dark">
+          <scola-clip type="nested" amount="one" flow="column">
+            <scola-clip fill="light" type="inner">
+              <scola-button handle height="small" fill="medium" slot="header" event="scola-clip-nested">
+                Test2
+              </scola-button>
+              <scola-button fill="dark" event="scola-clip-outer" target="list">
+                Dit is een test
+              </scola-button>
+            </scola-clip>
+            <scola-clip fill="light" type="inner" inner-hidden>
+              <scola-button handle height="small" fill="medium" slot="header" event="scola-clip-nested">
+                Test2
+              </scola-button>
+              <scola-button fill="dark" event="scola-clip-outer" target="list">
+                Dit is een test
+              </scola-button>
+            </scola-clip>
+            <scola-clip fill="light" type="inner" inner-hidden>
+              <scola-button handle height="small" fill="medium" slot="header" event="scola-clip-nested">
+                Test2
+              </scola-button>
+              <scola-button fill="dark" event="scola-clip-outer" target="list">
+                Dit is een test
+              </scola-button>
+            </scola-clip>
+          </scola-clip>
+        </scola-panel>
+  
+        <scola-panel slot="before" id="list" width="max" height="small" fill="dark" hidden>
+          <scola-clip fill="light" type="inner" flow="column">
+            <scola-button handle height="small" fill="medium" slot="header" event="scola-clip-inner">
+              Test3
+            </scola-button>
+            <scola-button fill="dark" event="scola-clip-outer" target="meta">
+              Dit is een test
+            </scola-button>
+            <scola-button fill="dark" event="scola-clip-outer" target="meta">
+              Dit is een test
+            </scola-button>
+            <scola-button fill="dark" event="scola-clip-outer" target="meta">
+              Dit is een test
+            </scola-button>
+          </scola-clip>
+        </scola-panel>
+  
+        <scola-clip id="meta" slot="after" width="max" fill="medium"
+          type="content" flow="column" content-dimension="height">
+          <scola-node fill="dark" width="max" height="medium" slot="footer" flow="row" handle>
+            <scola-button width="small" height="small" fill="light" 
+              event="scola-clip-content-or-inner" target="abc">a</scola-button>
+            <scola-button width="small" height="small" fill="light" 
+              event="scola-clip-content-or-inner" target="def">d</scola-button>
+          </scola-node>
+          <scola-panel id="abc" width="max" height="small" fill="dark">
+            abc
+          </scola-panel>
+          <scola-panel id="def" width="max" height="small" fill="light">
+            def
+          </scola-panel>
+        </scola-clip>
+  
+        <scola-node flow="column" height="max" style="background: red;">
+          <scola-clip fill="light" type="inner">
+            <scola-button handle height="small" fill="medium" slot="header" event="scola-clip-inner">
+              Test
+            </scola-button>
+            <scola-button fill="dark" event="scola-clip-outer" target="menu">
+              Dit is een test
+            </scola-button>
+          </scola-clip>
+        </scola-node>
+      </scola-app>
+
+
+
+<scola-panel slot="before" id="menu" width="small" height="max" fill="dark">
+          <scola-clip type="nested" amount="one" flow="column">
+            <scola-clip fill="light" type="inner">
+              <scola-button
+                handle
+                height="small"
+                fill="medium"
+                slot="header"
+                event="scola-clip-nested"
+              >
+                Test2
+              </scola-button>
+              <scola-button
+                fill="dark"
+                event="scola-clip-outer"
+                target="list"
+                observe=""
+                type="clip"
+              >
+                Dit is een test
+              </scola-button>
+            </scola-clip>
+            <scola-clip fill="light" type="inner" inner-hidden>
+              <scola-button
+                handle
+                height="small"
+                fill="medium"
+                slot="header"
+                event="scola-clip-nested"
+              >
+                Test2
+              </scola-button>
+              <scola-button fill="dark" event="scola-clip-outer" target="list">
+                Dit is een test
+              </scola-button>
+            </scola-clip>
+            <scola-clip fill="light" type="inner" inner-hidden>
+              <scola-button
+                handle
+                height="small"
+                fill="medium"
+                slot="header"
+                event="scola-clip-nested"
+              >
+                Test2
+              </scola-button>
+              <scola-button fill="dark" event="scola-clip-outer" target="list">
+                Dit is een test
+              </scola-button>
+            </scola-clip>
+          </scola-clip>
+        </scola-panel>
+        <scola-panel slot="before" id="list" width="small" height="max" fill="dark" hidden>
+          <scola-clip fill="light" type="inner" flow="column">
+            <scola-button
+              handle
+              height="small"
+              fill="medium"
+              slot="header"
+              event="scola-clip-inner"
+            >
+              Test3
+            </scola-button>
+            <scola-button
+              fill="dark"
+              event="scola-clip-outer"
+              target="meta"
+              observe=""
+              type="clip"
+            >
+              Dit is een test
+            </scola-button>
+            <scola-button
+              fill="dark"
+              event="scola-clip-outer"
+              target="meta"
+              observe=""
+              type="clip"
+            >
+              Dit is een test
+            </scola-button>
+            <scola-button
+              fill="dark"
+              event="scola-clip-outer"
+              target="meta"
+              observe=""
+              type="clip"
+            >
+              Dit is een test
+            </scola-button>
+          </scola-clip>
+        </scola-panel>
+        <scola-clip
+          id="meta"
+          slot="after"
+          height="max"
+          fill="medium"
+          type="content"
+          flow="row"
+          content-dimension="width"
+        >
+          <scola-node fill="dark" width="medium" height="max" slot="after" flow="column" handle>
+            <scola-button
+              preset="meta-button"
+              height="small"
+              fill="light"
+              active-color="primary"
+              event="scola-clip-content-or-inner"
+              target="abc"
+              observe=""
+              type="clip"
+            >
+              a
+            </scola-button>
+            <scola-button
+              width="small"
+              height="small"
+              fill="light"
+              active-color="primary"
+              event="scola-clip-content-or-inner"
+              target="def"
+              observe=""
+              type="clip"
+            >
+              d
+            </scola-button>
+            <scola-button
+              width="small"
+              height="small"
+              fill="light"
+              active-color="primary"
+              event="scola-clip-content-or-inner"
+              target="ghi"
+              observe=""
+              type="clip"
+            >
+              g
+            </scola-button>
+          </scola-node>
+          <scola-panel id="abc" width="small" height="max" fill="dark" hidden>
+            <scola-node slot="header" nowrap halign="center">header</scola-node>
+            abc
+          </scola-panel>
+          <scola-panel id="def" width="small" height="max" fill="light" hidden>def</scola-panel>
+          <scola-panel id="ghi" width="small" height="max" fill="light" hidden>ghi</scola-panel>
+        </scola-clip>
+        <scola-node flow="column" width="max" style="background: red;">
+          <scola-clip fill="light" type="inner">
+            <scola-button
+              handle
+              height="small"
+              fill="medium"
+              slot="header"
+              event="scola-clip-inner"
+            >
+              Test
+            </scola-button>
+            <scola-button
+              fill="dark"
+              event="scola-clip-outer"
+              target="menu"
+              observe=""
+              type="clip"
+            >
+              Dit is een test
+            </scola-button>
+          </scola-clip>
+        </scola-node>

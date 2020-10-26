@@ -1,40 +1,45 @@
-view
-view-panel
-button
-tab
-view-tab
-tab-button
-button stack
-increase width of panels
+sync!!!!
 
-fix properties: translucent, outside-line, --scola-dark-shadow-line etc.
-add default slot element etc to nodeelement
+check for smaller progress
+test before as icon
+test as icon
+add transition
 
-set colors of scrollbar etc correctly
-line shadow for translucent fill
-remove template from view
-icon loading (spin)
-add themes
-move helpers
+test clear all inputs
+test setdata with all inputs
+  add slider + select
 
-form-fill/submit
-// lock form when sending
-// test clear all inputs
-// test setdata with all inputs
-// value getter
-rename setValueText in inputs
+alert, banner
+app
+
+pickers
+implement disabled?
+input error
+
+menu does not have default view when link is copied
+allow clear of view
+
+icon size
+scrollbar color?
+badge
+request streaming
+scrolling for tabs
+
+---
 
 popout
 dialog
 // position of popout (top right left bottom of screen)
 // test with nested menu
 // nested popouts (agree + agree in iOS)
+picker
+  input-popout
+  input-file with dragndrop
 
-alert
-app
-auth
-input-popout
-input-file with dragndrop
+view: as clip
+section = panel = app?
+
+---
 
 // cap queuer stream size
 // reverse lookup of strings
@@ -69,30 +74,9 @@ const auth = {
 // ARIA
 
 // event-stream
-
-// fix ts-lit-plugin in tsconfig.json
-
-// view: ondisconnectedcallbacK: remove entry from url
 // implement tooltip
 
 // create something like:
 // https://material.io/components/menus#exposed-dropdown-menu (font picker)
 // https://material.io/design/color/dark-theme.html#ui-application (KPI)
 // try to recreate Sonos or Notes
-
-/* @media not all and (max-width: 1024px) {
-  slot[name="after"],
-  slot[name="after"]::slotted(*) {
-    position: relative;
-  }
-
-  slot[name="before"] {
-    position: relative;
-  }
-}
-
-@media (min-width: 768px) {
-  slot[name="before"]::slotted(*) {
-    position: relative;
-  }
-} */

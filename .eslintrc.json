@@ -32,6 +32,7 @@
         "@typescript-eslint"
       ],
       "rules": {
+        "@typescript-eslint/consistent-indexed-object-style": "off",
         "@typescript-eslint/consistent-type-imports": "off",
         "@typescript-eslint/indent": [
           "error",
@@ -92,17 +93,16 @@
           "error",
           {
             "allow": [
-              "arrowFunctions"
+              "arrowFunctions",
+              "methods"
             ]
           }
         ],
         "@typescript-eslint/no-empty-interface": "off",
-        "@typescript-eslint/no-inferrable-types": "off",
+        "no-extra-parens": "off",
+        "@typescript-eslint/no-extra-parens": "off",
         "@typescript-eslint/no-magic-numbers": "off",
-        "@typescript-eslint/no-parameter-properties": "off",
-        "@typescript-eslint/no-type-alias": [
-          "off"
-        ],
+        "@typescript-eslint/no-type-alias": "off",
         "@typescript-eslint/no-unused-vars-experimental": [
           "error",
           {
@@ -159,10 +159,8 @@
         "max-params": "off",
         "max-statements": "off",
         "multiline-comment-style": "off",
-        "multiline-ternary": [
-          "error",
-          "always-multiline"
-        ],
+        "multiline-ternary": "off",
+        "no-bitwise": "off",
         "no-empty-function": "off",
         "no-multiple-empty-lines": [
           "error",

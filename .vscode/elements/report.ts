@@ -7,7 +7,7 @@ import {
 
 @customElement('me-report')
 export class ReportElement extends ContentElement {
-  public flow: ContentElement['flow'] = 'wrap'
+  public flow: ContentElement['flow'] = 'row'
 
   public heading: string = 'Rapportages'
 

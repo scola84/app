@@ -6,6 +6,11 @@
     "module": "ES6",
     "moduleResolution": "node",
     "noEmit": true,
+    "plugins": [
+      {
+        "name": "ts-lit-plugin"
+      }
+    ],
     "rootDir": "./src",
     "strict": true,
     "strictPropertyInitialization": false,

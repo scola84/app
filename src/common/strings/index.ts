@@ -1,5 +1,5 @@
 import nl from './nl'
 
-export const strings = {
+export default {
   nl
 }
