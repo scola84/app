@@ -1,8 +1,7 @@
-import { FastifyInstance } from 'fastify'
-import { Queuer } from '@scola/lib'
+import { ServiceHelpers } from '@scola/lib'
 import { scheduleJob } from 'node-schedule'
 
-export function date (router: FastifyInstance, queuer: Queuer): void {
+export function date ({ queuer }: ServiceHelpers): void {
   let counter = 0
 
   scheduleJob('* * * * *', () => {
@@ -12,7 +11,7 @@ export function date (router: FastifyInstance, queuer: Queuer): void {
         time: new Date()
       })
       .catch((error: Error) => {
-        router.log.error(error)
+        queuer.log.error(error)
       })
   })
 }

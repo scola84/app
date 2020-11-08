@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  ssh-v2:
+    image: kroniak/ssh-client:3.9
+    command: ssh -q -N 178.128.252.237
+    restart: always
+    secrets:
+      - ssh_v2_key
+    volumes:
+      - $PWD/.docker/ssh/ssh_config:/etc/ssh/ssh_config

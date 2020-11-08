@@ -1,7 +1,7 @@
-import { FastifyInstance } from 'fastify'
+import { ServiceHelpers } from '@scola/lib'
 
-export function get (router: FastifyInstance): void {
-  router.route({
+export function get ({ server }: ServiceHelpers): void {
+  server.route({
     handler: async () => {
       return Promise.resolve({
         test1: [

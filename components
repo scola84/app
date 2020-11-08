@@ -1,0 +1,29 @@
+Components
+App bars: bottom    - scola-node
+App bars: top       - scola-node
+Backdrop            - scola-node
+Banners             - scola-log
+Bottom navigation   - scola-node
+Buttons             - scola-button
+Buttons: FAB        - scola-button?
+Cards               - scola-node
+Chips               - ?
+Data tables         - ?
+Date pickers        - native
+Dialogs             - scola-dialog
+Dividers            - scola-node
+Image lists         - ?
+Lists               - ?
+Menus               - scola-dialog
+Navigation drawer   - scola-clip
+Navigation rail     - scola-node
+Progress indicators - scola-progress
+Selection controls  - scola-select
+Sheets: bottom      - scola-dialog
+Sheets: side        - scola-dialog
+Sliders             - scola-slider
+Snackbars           - scola-log
+Tabs                - scola-clip
+Text fields         - scola-input
+Time pickers        - native
+Tooltips            - ?

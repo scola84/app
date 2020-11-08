@@ -1,5 +1,5 @@
 version: "3.7"
 services:
   redis:
-    image: "redis:5-buster"
+    image: "redis:6-alpine"
     restart: always

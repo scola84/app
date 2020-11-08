@@ -8,10 +8,11 @@ services:
     environment:
       - NODE_SCRIPT=./dist/server/cjs.js
     secrets:
+      - mysql
       - postgres
     volumes:
-      - $PWD/node_modules:/node/node_modules
-      - $PWD/dist:/node/dist
-      - $PWD/package.json:/node/package.json
-      - $PWD/tsconfig.json:/node/tsconfig.json
-    working_dir: /node
+      - $PWD/node_modules:/node/app/node_modules
+      - $PWD/../node_modules:/node/node_modules
+      - $PWD/dist:/node/app/dist
+      - $PWD/package.json:/node/app/package.json
+    working_dir: /node/app

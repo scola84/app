@@ -1,59 +1,32 @@
-sync!!!!
-
-check for smaller progress
-test before as icon
-test as icon
-add transition
-
-test clear all inputs
-test setdata with all inputs
-  add slider + select
-
-alert, banner
-app
-
-pickers
-implement disabled?
-input error
-
-menu does not have default view when link is copied
-allow clear of view
-
-icon size
-scrollbar color?
-badge
-request streaming
-scrolling for tabs
+sync!
 
 ---
 
-popout
-dialog
-// position of popout (top right left bottom of screen)
-// test with nested menu
-// nested popouts (agree + agree in iOS)
-picker
-  input-popout
-  input-file with dragndrop
+fix loading icon when connection refused
+catch error in query (Connection already released is the error)
 
-view: as clip
-section = panel = app?
+set logger on queuer, do not pass error to callback
+cap queuer stream size
 
----
+redesign request
+test request buffer handling with other element (video)
+event-stream
 
-// cap queuer stream size
-// reverse lookup of strings
+queries
 
-// create models
-// list
-// add/set/del
-// pagination + swipe
-// search
-// small/wide
+design item (normal list, media list?, data table)
 // select multiple
-// button vs list item
-// show all
+
+test everything horizontal
+implement list horizontally
+
 // unfold item with panel (for inline editing)
+extend presets
+
+picker
+  dialog
+
+---
 
 // authorize
 //  return credentials from Authorizer.authorize
@@ -66,15 +39,23 @@ const auth = {
   'post.delete': 2
 }
 
+---
+
 // profile
 //   store tabs toggle etc.
 //   store settings in profile, but save only at will
 //   Profile.get/set/del/add + endpoints (list + object)
 
+---
+
 // ARIA
 
-// event-stream
+---
+
 // implement tooltip
+scrolling for tabs (+ view tabs?)
+
+---
 
 // create something like:
 // https://material.io/components/menus#exposed-dropdown-menu (font picker)

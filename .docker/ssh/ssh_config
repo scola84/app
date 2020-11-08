@@ -1,0 +1,10 @@
+AddressFamily inet
+ExitOnForwardFailure yes
+Host 178.128.252.237
+IdentityFile /run/secrets/ssh_v2_key
+LocalForward *:7701 localhost:7001
+Port 8021
+RequestTTY no
+ServerAliveInterval 60
+StrictHostKeyChecking no
+User deploy

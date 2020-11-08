@@ -7,15 +7,17 @@ import {
 
 @customElement('me-reports')
 export class ReportsElement extends NodeElement {
-  public flow: NodeElement['flow'] = 'wrap'
-
   public viewTitle = 'Rapportages'
+
+  public createRenderRoot (): this {
+    return this
+  }
 
   public render (): TemplateResult {
     return html`
-      <slot name="body">
+      <scola-node flow="row" halign="center" hpadding="medium" vpadding="medium" wrap>
         Rapportages
-      </slot>
+      </scola-node>
     `
   }
 }

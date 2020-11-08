@@ -17,6 +17,13 @@ const input = {
   vmargin: 'small'
 }
 
+declare module '@scola/lib' {
+  interface Presets {
+    'card': unknown
+    'main-card': unknown
+  }
+}
+
 export default {
   'card': {
     flow: 'column',
@@ -77,11 +84,18 @@ export default {
   },
   'input-header': {
     color: 'aux-2',
+    flow: 'row',
     font: 'small',
+    halign: 'between',
     hpadding: 'medium',
     vmargin: 'small'
   },
   'input-icon': {
+    color: 'sig-1',
+    hmargin: 'medium',
+    size: 'medium'
+  },
+  'input-with-icon': {
     ...input
   },
   'main-card': {
@@ -134,7 +148,8 @@ export default {
   },
   'menu-icon': {
     color: 'sig-1',
-    hmargin: 'large'
+    hmargin: 'large',
+    size: 'medium'
   },
   'menu-space': {
     vmargin: 'medium',
@@ -142,9 +157,10 @@ export default {
   },
   'panel-bar': {
     color: 'aux-1',
-    fill: 'aux-4',
+    fill: 'translucent',
     flow: 'row',
     height: 'medium',
+    noOverflow: true,
     outerBackdrop: 'large',
     // outerShadow: 'line',
     valign: 'center',
@@ -171,6 +187,7 @@ export default {
     color: 'aux-1',
     fill: 'aux-1',
     innerBackdrop: 'large',
+    height: 'max',
     outerHeight: 'max',
     // outerShadow: 'line',
     outerWidth: 'small',
@@ -185,11 +202,12 @@ export default {
   'panel-title': {
     font: 'medium',
     hmargin: 'large',
-    nowrap: true,
+    noOverflow: true,
+    noWrap: true,
     weight: 'bold'
   },
   'view': {
-    flow: 'column',
+    flow: 'row',
     width: 'max'
   }
 }
