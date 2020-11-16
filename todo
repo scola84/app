@@ -2,29 +2,29 @@ sync!
 
 ---
 
-fix loading icon when connection refused
-catch error in query (Connection already released is the error)
+simplify eslint
 
-set logger on queuer, do not pass error to callback
-cap queuer stream size
-
-redesign request
-test request buffer handling with other element (video)
-event-stream
-
-queries
-
-design item (normal list, media list?, data table)
-// select multiple
+---
 
 test everything horizontal
 implement list horizontally
 
-// unfold item with panel (for inline editing)
-extend presets
+design item (normal list, media list?, data table)
+// select multiple
+// unfold item with panel (for inline editing)?
 
 picker
   dialog
+
+flushdb on redis, then taskrunner chokes
+  reconnect
+
+extend presets
+
+event-stream
+
+// implement tooltip
+scrolling for tabs (+ view tabs?)
 
 ---
 
@@ -49,11 +49,6 @@ const auth = {
 ---
 
 // ARIA
-
----
-
-// implement tooltip
-scrolling for tabs (+ view tabs?)
 
 ---
 

@@ -77,6 +77,15 @@ export class DashboardElement extends NodeElement {
                 </scola-button>
               </scola-node>
             </scola-log>
+            <scola-progress
+            stroke="medium"
+              fill="sig-1"
+              slot="header"
+              vposition="top"
+              width="max"
+              type="rect"
+                observe="list"
+              ></scola-progress>
             <scola-node
               fill="aux-3"
               hpadding="medium"
@@ -87,7 +96,6 @@ export class DashboardElement extends NodeElement {
               slot="footer"
             >
               <scola-progress
-                indeterminate
                 slot="before"
                 size="medium"
                 stroke="small"
@@ -95,7 +103,7 @@ export class DashboardElement extends NodeElement {
                 type="circle"
                 observe="list"
               ></scola-progress>
-              <scola-button fill="aux-2" preset="icon-button" event="scola-list-reload">
+              <scola-button fill="aux-2" preset="icon-button" event="scola-list-restart">
                 <scola-icon size="medium" name="refresh"></scola-icon>
               </scola-button>
               <scola-button fill="aux-2" preset="icon-button" target="filter-list" event="scola-dialog-show">
@@ -206,25 +214,28 @@ export class DashboardElement extends NodeElement {
               <scola-node preset="panel-title">Profiel</scola-node>
               <scola-node preset="main-card-panel-buttons" slot="after">
                 <scola-button
-                  event="scola-form-submit"
-                  observe="form-profile"
+                  event="scola-request-toggle"
+                  observe="progress-profile"
                   preset="main-card-panel-button"
                   target="form-profile"
                 >
-                  <!-- <scola-progress
+                  <scola-progress
                     is="progress"
                     hposition="start"
                     vposition="top"
+                    mode="determinate"
                     width="max"
                     height="max"
                     id="progress-profile"
                     method="POST"
+                    stroke="small"
                     size="medium"
                     fill="sig-1"
                     type="circle"
                     observe="form-profile"
-                  ></scola-progress> -->
-                  <scola-format>Opslaan</scola-format>
+                  ></scola-progress>
+                  <scola-icon is="abort" size="small" name="stop" width="max" valign="center" halign="center" flow="row" height="max" vposition="top" hposition="start"></scola-icon>
+                  <scola-format is="start">Opslaan</scola-format>
                 </scola-button>
               </scola-node>
             </scola-node>
@@ -247,8 +258,9 @@ export class DashboardElement extends NodeElement {
               </scola-node>
             </scola-log>
             <scola-progress
-              size="medium"
+              stroke="medium"
               fill="sig-1"
+              method="POST"
               vposition="top"
               width="max"
               type="rect"

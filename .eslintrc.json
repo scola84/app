@@ -138,6 +138,7 @@
           "always"
         ],
         "capitalized-comments": "off",
+        "camelcase": "off",
         "class-methods-use-this": "off",
         "dot-location": "off",
         "func-style": [

@@ -1,11 +1,19 @@
+import 'reflect-metadata'
+import 'source-map-support/register'
 import * as services from './services'
 
 import {
   Formatter,
-  Queuer,
+  QueueManager,
+  QueueRunner,
   ServerError,
-  ServiceMethod
+  TaskRunner,
+  createConnections
 } from '@scola/lib'
+
+import fastify, {
+  FastifyInstance
+} from 'fastify'
 
 import {
   redis,
@@ -13,14 +21,15 @@ import {
 } from './connections'
 
 import cookie from 'fastify-cookie'
-import { createConnections } from 'typeorm'
-import fastify from 'fastify'
 import formbody from 'fastify-formbody'
-import micromatch from 'micromatch'
+import { isMatch } from 'micromatch'
 import multer from 'fastify-multer'
+import { setup } from './helpers/setup'
 import strings from '../common/strings'
 
-Formatter.strings = strings
+const logLevel = process.env.LOG_LEVEL ?? 'info'
+const queueFilter = process.env.QUEUE_FILTER
+const serviceFilter = process.env.SERVICE_FILTER?.split(':') ?? '*'
 
 const server = fastify({
   ajv: {
@@ -30,63 +39,78 @@ const server = fastify({
     }
   },
   logger: {
-    level: 'debug'
+    level: logLevel
   }
 })
 
-server.addHook('preSerialization', (request, reply, data, done) => {
-  done(null, reply.statusCode >= 400 ? data : {
-    code: `OK_${reply.statusCode}`,
-    data
-  })
+const queueManager = new QueueManager({
+  entityManager: 'docker',
+  filter: queueFilter,
+  listenerClient: redis,
+  logger: server.log,
+  schedule: '* * * * *'
 })
 
-server.setErrorHandler(({ code, validation }, request, reply) => {
-  reply
-    .send(new ServerError(code, validation))
-    .then(() => {}, server.log.error)
-})
+Formatter.strings = strings
 
-server.setNotFoundHandler((request, reply) => {
-  reply
-    .code(404)
-    .send(new ServerError('ERR_RESPONSE_404'))
-    .then(() => {}, server.log.error)
-})
+QueueRunner.options = {
+  entityManager: 'docker',
+  logger: server.log,
+  maxLength: 1024 * 1024,
+  queueClient: redis
+}
 
-const queuer = new Queuer(redis)
-queuer.log = server.log
+TaskRunner.options = {
+  entityManager: 'docker',
+  logger: server.log,
+  maxLength: 1024 * 1024,
+  queueClient: redis
+}
 
 createConnections(sql)
-  .then(() => {
-    Object.entries(services).forEach(([serviceName, service]) => {
-      Object.entries(service).forEach(([sectionName, section]) => {
-        Object.entries(section).forEach(([methodName, method]) => {
-          if (micromatch.isMatch(
-            `${serviceName}.${sectionName}.${methodName}`,
-            process.env.SERVICES?.split(':') ?? '*'
-          )) {
-            (method as ServiceMethod)({
-              queuer,
-              server
-            })
+  .then(async () => {
+    await setup()
+
+    Object.entries(services).forEach(([sr, service]) => {
+      Object.entries(service).forEach(([sc, section]) => {
+        Object.entries(section).forEach(([mt, method]) => {
+          if (isMatch(`${sr}.${sc}.${mt}`, serviceFilter)) {
+            (method as (server: FastifyInstance) => void)(server)
           }
         })
       })
     })
 
-    server
+    queueManager.start()
+    queueManager.callSchedule()
+
+    return server
+      .addHook('preSerialization', (request, reply, data, done) => {
+        done(null, reply.statusCode >= 400 ? data : {
+          code: `OK_${reply.statusCode}`,
+          data
+        })
+      })
+      .setErrorHandler(({ code, validation }, request, reply) => {
+        reply
+          .send(new ServerError(code, validation))
+          .then(() => {}, (error: Error) => {
+            server.log.error(String(error))
+          })
+      })
+      .setNotFoundHandler((request, reply) => {
+        reply
+          .code(404)
+          .send(new ServerError('ERR_RESPONSE_404'))
+          .then(() => {}, (error: Error) => {
+            server.log.error(String(error))
+          })
+      })
       .register(cookie)
       .register(formbody)
       .register(multer.contentParser)
-      .listen({
-        host: process.env.BIND_ADDRESS ?? '0.0.0.0',
-        port: Number(process.env.BIND_PORT ?? 3000)
-      })
-      .catch((error: Error) => {
-        server.log.error(error)
-      })
+      .listen(3000, '0.0.0.0')
   })
-  .catch((error) => {
-    server.log.error(error)
+  .catch((error: Error) => {
+    server.log.error(String(error))
   })

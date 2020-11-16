@@ -3,6 +3,7 @@ import fetch, {
 } from 'node-fetch'
 
 import { Readable } from 'stream'
+import queue from './queue'
 
 export interface Data {
   data: {
@@ -16,7 +17,7 @@ export interface Datum {
   totalActivePower: number
   dcVoltage: number
   powerLimit: number
-  totalEnergy: number
+  totalEnergy?: number
   temperature: number
   inverterMode: string
   operationMode: number
@@ -34,6 +35,8 @@ export interface Datum {
 export interface DataReaderOptions {
   apiKey: string
   endTime?: Date
+  maxTries?: number
+  numDays?: number
   serialNumber: string
   siteId: string
   startTime: Date
@@ -48,13 +51,15 @@ export class DataReader extends Readable {
 
   public fetch = fetch
 
+  public maxTries: number
+
   public nextStartTime: Date
+
+  public numDays: number
 
   public path: string
 
   public startTime: Date
-
-  public tries = 0
 
   public constructor (options: DataReaderOptions) {
     super({
@@ -64,6 +69,8 @@ export class DataReader extends Readable {
     const {
       apiKey,
       endTime,
+      maxTries,
+      numDays,
       serialNumber,
       siteId,
       startTime
@@ -71,6 +78,8 @@ export class DataReader extends Readable {
 
     this.apiKey = apiKey
     this.endTime = endTime
+    this.maxTries = maxTries ?? 3
+    this.numDays = numDays ?? 6
     this.startTime = startTime
 
     this.path = [
@@ -84,6 +93,8 @@ export class DataReader extends Readable {
   public _read (): void {
     if (this.data.length) {
       this.push(this.data.shift())
+    } else if (this.nextStartTime > new Date()) {
+      this.push(null)
     } else {
       this.readData()
     }
@@ -148,15 +159,15 @@ export class DataReader extends Readable {
       })
   }
 
-  protected handleResponse (response: Response): void {
+  protected handleResponse (response: Response, numTries = 0): void {
     if (response.status === 200) {
       if (response.headers.get('Content-Type')?.includes('json') === true) {
         this.handleDataJSON(response)
       } else {
         this.handleDataText(response)
       }
-    } else if (response.status > 405 && this.tries < 3) {
-      this.readData()
+    } else if (response.status > 405 && numTries < this.maxTries) {
+      this.readData(numTries + 1)
     } else {
       this.handleError(response)
     }
@@ -165,27 +176,19 @@ export class DataReader extends Readable {
   protected handleTelemetries (data: Data): void {
     this.data = data.data?.telemetries ?? []
     this.startTime = this.nextStartTime
-    this.tries = 0
-
-    if (this.data.length) {
-      this.push(this.data.shift())
-    } else {
-      this.push(null)
-    }
+    this._read()
   }
 
-  protected readData (): void {
+  protected readData (numTries?: number): void {
     const { startTime } = this
     let { endTime } = this
 
     if (endTime === undefined) {
       endTime = new Date(startTime)
-      endTime.setDate(endTime.getDate() + 1)
+      endTime.setDate(endTime.getDate() + this.numDays)
     }
 
     this.nextStartTime = endTime
-    this.tries += 1
-
     const url = new URL(this.path, 'https://monitoringapi.solaredge.com')
 
     url.searchParams.append(
@@ -209,12 +212,16 @@ export class DataReader extends Readable {
         .replace('T', ' ')
     )
 
-    this.fetch(url)
-      .then((response) => {
-        this.handleResponse(response)
-      })
-      .catch((error: unknown) => {
-        this.emit('error', `Request error: ${String(error)}`)
-      })
+    queue.push((callback) => {
+      this.fetch(url)
+        .then((response) => {
+          callback()
+          this.handleResponse(response, numTries)
+        })
+        .catch((error: unknown) => {
+          callback()
+          this.emit('error', `Request error: ${String(error)}`)
+        })
+    })
   }
 }

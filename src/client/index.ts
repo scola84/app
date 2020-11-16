@@ -14,30 +14,30 @@ import icons from './icons'
 import presets from './presets'
 import strings from '../common/strings'
 
-window.addEventListener('DOMContentLoaded', (): void => {
-  FormatElement.lang = 'nl'
-  FormatElement.strings = strings
+FormatElement.lang = 'nl'
+FormatElement.strings = strings
 
-  IconElement.icons = icons
-  NodeElement.presets = presets
+IconElement.icons = icons
+NodeElement.presets = presets
 
-  ViewElement.states = {
-    main: {
-      save: true,
-      views: [{
-        ref: 'me-dashboard'
-      }]
-    },
-    menu: {
-      save: true,
-      views: [{
-        ref: 'me-menu'
-      }]
-    }
+ViewElement.states = {
+  main: {
+    save: true,
+    views: [{
+      ref: 'me-dashboard'
+    }]
+  },
+  menu: {
+    save: true,
+    views: [{
+      ref: 'me-menu'
+    }]
   }
+}
 
-  ViewElement.type = 'replace'
+ViewElement.type = 'replace'
 
+window.addEventListener('DOMContentLoaded', (): void => {
   // document.dir = 'rtl'
   document.title = 'Mijn Herman'
   document.body.ontouchstart = (): void => {}

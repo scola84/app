@@ -27,3 +27,569 @@ Tabs                - scola-clip
 Text fields         - scola-input
 Time pickers        - native
 Tooltips            - ?
+
+
+// export * from './helpers'
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable max-classes-per-file */
+/* eslint-disable new-cap */
+import 'reflect-metadata'
+import 'source-map-support/register'
+import {
+  Column,
+  Entity,
+  EntityManager,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  createConnections,
+  getConnection,
+  getManager
+} from 'typeorm'
+
+import {
+  Duplex,
+  Writable
+} from 'stream'
+
+import Redis, {
+  RedisOptions
+} from 'ioredis'
+
+export interface TaskRunOptions {
+  [key: string]: unknown
+}
+
+@Entity()
+export class Item {
+  @Column({
+    type: 'varchar'
+  })
+  public code = 'pending'
+
+  @PrimaryGeneratedColumn()
+  public id?: number
+
+  @Column({
+    type: 'simple-json'
+  })
+  public payload?: unknown
+
+  @ManyToOne(() => {
+    return QueueRun
+  }, (queueRun) => {
+    return queueRun.items
+  })
+  public queueRun?: QueueRun
+
+  @OneToMany(() => {
+    return TaskRun
+  }, (taskRun) => {
+    return taskRun.item
+  }, {
+    cascade: true
+  })
+  public taskRuns?: Partial<TaskRun>[]
+}
+
+export interface TaskRunnerOptions {
+  block?: number
+  consumer?: string
+  count?: number
+  group?: string
+  name: string
+}
+
+export class TaskRunner extends Duplex {
+  public static client: RedisOptions
+
+  public static connection: string
+
+  public block: number
+
+  public consumer: string
+
+  public count: number
+
+  public group: string
+
+  public name: string
+
+  protected client: Redis.Redis
+
+  protected manager: EntityManager
+
+  protected xid = '>'
+
+  public constructor (options: TaskRunnerOptions) {
+    super({
+      objectMode: true
+    })
+
+    const {
+      block,
+      consumer,
+      count,
+      name,
+      group
+    } = options
+
+    this.block = block ?? 1000
+    this.consumer = consumer ?? process.env.HOSTNAME ?? ''
+    this.count = count ?? 1
+    this.name = name
+    this.group = group ?? name
+
+    this.client = new Redis(TaskRunner.client)
+    this.manager = getManager(TaskRunner.connection)
+  }
+
+  public _read (): void {}
+
+  public async _write (taskRun: TaskRun, encoding: string, callback: () => void): Promise<void> {
+    if (taskRun.xid !== undefined) {
+      await this.client.xack(this.name, this.group, taskRun.xid)
+    }
+
+    await this.manager.save(taskRun)
+
+    if (taskRun.code === 'ok') {
+      const nextTaskRun = await this.manager
+        .createQueryBuilder()
+        .select()
+        .from(TaskRun, 'taskRun')
+        .where('order > :order', taskRun)
+        .getOne()
+
+      if (nextTaskRun?.queueRun?.queue?.name !== undefined && nextTaskRun.name !== undefined) {
+        const name = `${nextTaskRun.queueRun.queue.name}${nextTaskRun.name}`
+        console.log('add', name)
+        await this.client.xadd(name, '*', ['taskRun', nextTaskRun.id])
+      }
+    }
+
+    const { item } = taskRun
+
+    if (item) {
+      item.code = taskRun.code
+      await this.manager.save(item)
+    }
+
+    callback()
+  }
+
+  public async start (): Promise<void> {
+    await this.create()
+    await this.next()
+  }
+
+  protected async create (): Promise<string | undefined> {
+    try {
+      const infoGroups = await this.client.xinfo('GROUPS', this.name) as []
+      const exists = infoGroups.some((infoGroup: unknown[]) => {
+        return infoGroup[1] === this.group
+      })
+
+      if (!exists) {
+        await this.client.xgroup('CREATE', this.name, this.group, '$')
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message === 'ERR no such key') {
+        await this.client.xgroup('CREATE', this.name, this.group, '$', 'MKSTREAM')
+        return
+      }
+
+      throw error
+    }
+  }
+
+  protected async next (): Promise<void> {
+    const result = await this.client.xreadgroup(
+      'GROUP',
+      this.group,
+      this.consumer,
+      'BLOCK',
+      this.block,
+      'COUNT',
+      this.count,
+      'STREAMS',
+      this.name,
+      this.xid
+    ) as [string, string[] | null][] | null
+
+    if (!result || !result[0][1]) {
+      await this.next()
+      return
+    }
+
+    if (result[0][1].length === 0) {
+      this.xid = '>'
+      await this.next()
+      return
+    }
+
+    for (const [xid, [,itemId]] of result[0][1]) {
+      await this.process(itemId, xid)
+      this.xid = xid
+    }
+  }
+
+  protected async process (itemId: string, xid: string): Promise<void> {
+    const taskRun = await this.manager.findOne(TaskRun, itemId)
+
+    if (taskRun) {
+      taskRun.xid = xid
+      await this.manager.save(taskRun)
+      this.push(taskRun)
+    }
+  }
+}
+
+@Entity()
+export class TaskRun {
+  @Column({
+    type: 'varchar'
+  })
+  public code = 'pending'
+
+  @PrimaryGeneratedColumn()
+  public id?: number
+
+  @ManyToOne(() => {
+    return Item
+  }, (item) => {
+    return item.taskRuns
+  })
+  public item?: Item
+
+  @Column({
+    type: 'varchar'
+  })
+  public name?: string
+
+  @Column({
+    nullable: true,
+    type: 'simple-json'
+  })
+  public options?: TaskRunOptions
+
+  @Column()
+  public order?: number
+
+  @ManyToOne(() => {
+    return QueueRun
+  }, (queueRun) => {
+    return queueRun.taskRuns
+  })
+  public queueRun?: QueueRun
+
+  @Column({
+    nullable: true,
+    type: 'varchar'
+  })
+  public xid?: string
+}
+
+@Entity()
+export class QueueRun {
+  @PrimaryGeneratedColumn()
+  public id?: number
+
+  @OneToMany(() => {
+    return Item
+  }, (item) => {
+    return item.queueRun
+  }, {
+    cascade: true
+  })
+  public items?: Item[]
+
+  @ManyToOne(() => {
+    return Queue
+  }, (queue) => {
+    return queue.queueRuns
+  })
+  public queue?: Queue
+
+  @Column({
+    type: 'integer'
+  })
+  public total = 0
+
+  public taskRuns?: TaskRun[]
+}
+
+class QueueRunner extends Writable {
+  public static client: RedisOptions
+
+  public static connection: string
+
+  protected client: Redis.Redis
+
+  protected manager: EntityManager
+
+  protected queueRun: QueueRun
+
+  public constructor () {
+    super({
+      objectMode: true
+    })
+
+    this.client = new Redis(QueueRunner.client)
+    this.manager = getManager(QueueRunner.connection)
+  }
+
+  public async _final (callback: () => void): Promise<void> {
+    await this.manager.save(this.queueRun)
+    callback()
+  }
+
+  public async _write (payload: unknown, encoding: string, callback: () => void): Promise<void> {
+    const item = new Item()
+
+    item.payload = payload
+    item.queueRun = this.queueRun
+    item.taskRuns = this.queueRun.taskRuns?.map((taskRun) => {
+      return {
+        ...taskRun
+      }
+    })
+
+    const [firstTaskRun] = item.taskRuns ?? []
+
+    if (this.queueRun.queue?.name !== undefined && firstTaskRun.name !== undefined) {
+      const name = `${this.queueRun.queue.name}${firstTaskRun.name}`
+      await this.client.xadd(name, '*', ['taskRun', firstTaskRun.id])
+      await this.manager.save(item)
+    }
+
+    this.queueRun.total += 1
+    callback()
+  }
+
+  public async run (queue: Queue): Promise<void> {
+    console.log('run queue')
+    this.queueRun = new QueueRun()
+
+    this.queueRun.queue = queue
+    this.queueRun.taskRuns = queue.tasks.map((task) => {
+      return {
+        code: 'pending',
+        name: task.name,
+        options: task.options?.reduce((options, { name, value }) => {
+          return Object.assign(options, {
+            [name]: value
+          })
+        }, {}),
+        order: task.order
+      }
+    })
+
+    await this.manager.save(this.queueRun)
+
+    const stream = await getConnection(queue.connection)
+      .createQueryRunner()
+      .stream(queue.query)
+
+    stream
+      .on('end', () => {
+        stream.unpipe(this)
+      })
+      .pipe(this)
+  }
+}
+
+@Entity()
+export class Queue {
+  @Column({
+    type: 'varchar'
+  })
+  public connection: string
+
+  @PrimaryGeneratedColumn()
+  public id: number
+
+  @Column({
+    type: 'varchar'
+  })
+  public name: string
+
+  @Column({
+    type: 'text'
+  })
+  public query: string
+
+  @OneToMany(() => {
+    return QueueRun
+  }, (queueRun) => {
+    return queueRun.queue
+  })
+  public queueRuns: QueueRun[]
+
+  @OneToMany(() => {
+    return Task
+  }, (task) => {
+    return task.queue
+  }, {
+    cascade: true
+  })
+  public tasks: Task[]
+}
+
+@Entity()
+export class Task {
+  @PrimaryGeneratedColumn()
+  public id?: number
+
+  @Column()
+  public name?: string
+
+  @OneToMany(() => {
+    return TaskOption
+  }, (options) => {
+    return options.task
+  }, {
+    cascade: true
+  })
+  public options?: TaskOption[]
+
+  @Column()
+  public order?: number
+
+  @ManyToOne(() => {
+    return Queue
+  }, (queue) => {
+    return queue.tasks
+  })
+  public queue?: Queue
+}
+
+@Entity()
+export class TaskOption {
+  @PrimaryGeneratedColumn()
+  public id?: number
+
+  @Column({
+    type: 'varchar'
+  })
+  public name: string
+
+  @ManyToOne(() => {
+    return Task
+  }, (task) => {
+    return task.options
+  })
+  public task?: Task
+
+  @Column({
+    type: 'varchar'
+  })
+  public value: string
+}
+
+TaskRunner.connection = 'docker'
+TaskRunner.client = { host: 'redis' }
+QueueRunner.connection = 'docker'
+QueueRunner.client = { host: 'redis' }
+
+createConnections([{
+  logging: ['error'],
+  name: 'local',
+  type: 'mysql',
+  url: 'mysql://root:root@192.168.1.106:3306'
+}, {
+  dropSchema: true,
+  entities: [
+    Item,
+    Queue,
+    QueueRun,
+    Task,
+    TaskOption,
+    TaskRun
+  ],
+  logging: ['error'],
+  name: 'docker',
+  synchronize: true,
+  type: 'postgres',
+  url: 'postgres://postgres:postgres@postgres'
+}])
+  .then(async () => {
+    const hourRunner = new TaskRunner({
+      name: 'aggregate-inverter-hour'
+    })
+
+    hourRunner.on('data', (data) => {
+      console.log('hebbes hour', data)
+    })
+
+    await hourRunner.start()
+    hourRunner.pipe(hourRunner)
+
+    const dayRunner = new TaskRunner({
+      name: 'aggregate-inverter-hour'
+    })
+
+    dayRunner.on('data', (data) => {
+      console.log('hebbes day', data)
+    })
+
+    await dayRunner.start()
+    dayRunner.pipe(dayRunner)
+
+    console.log('??')
+
+    const queue = new Queue()
+    queue.name = 'aggregate-inverter'
+    queue.query = `
+      SELECT * FROM platform.inverter LIMIT 1 OFFSET 0
+    `
+    queue.connection = 'local'
+
+    const task = new Task()
+    task.name = 'hour'
+    task.order = 1
+
+    const option = new TaskOption()
+    option.name = 'houroption1'
+    option.value = 'hourvalue1'
+
+    task.options = [option]
+
+    const task2 = new Task()
+    task2.name = 'day'
+    task2.order = 2
+
+    queue.tasks = [task, task2]
+
+    return getManager('docker').save(queue)
+  })
+  .then(async (queue: Queue) => {
+    const runner = new QueueRunner()
+    await runner.run(queue)
+  })
+  .catch((error) => {
+    console.log(error)
+  })
+
+// const task = new Task({
+//   redis: {
+//     host: 'redis'
+//   },
+//   stream: 'test'
+// })
+
+// const otherTask = new Transform({
+//   objectMode: true,
+//   transform (item, encoding, callback): void {
+//     callback(null, item)
+//   }
+// })
+
+// otherTask.on('error', () => {
+//   console.log('neeenee')
+// })
+
+// task
+//   .pipe(otherTask)
+//   .pipe(task)

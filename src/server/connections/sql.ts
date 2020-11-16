@@ -1,14 +1,16 @@
-import { ConnectionOptions } from 'typeorm'
+import {
+  ConnectionOptions,
+  Item,
+  Queue,
+  QueueRun,
+  Task,
+  TaskOption,
+  TaskRun
+} from '@scola/lib'
+
 import { secrets } from 'docker-secret'
 
 export const sql: ConnectionOptions[] = [{
-  entities: [
-    './entities/*.ts'
-  ],
-  logging: ['error'],
-  type: 'postgres',
-  url: `postgres://${secrets.postgres}@postgres`
-}, {
   logging: ['error'],
   name: 'local',
   type: 'mysql',
@@ -18,4 +20,19 @@ export const sql: ConnectionOptions[] = [{
   name: 'v2',
   type: 'mysql',
   url: `mysql://${secrets.mysql}@ssh-v2:7701/platform?supportBigNumbers=true`
+}, {
+  dropSchema: true,
+  entities: [
+    Item,
+    Queue,
+    QueueRun,
+    Task,
+    TaskOption,
+    TaskRun
+  ],
+  logging: ['error'],
+  name: 'docker',
+  synchronize: true,
+  type: 'postgres',
+  url: 'postgres://postgres:postgres@postgres'
 }]

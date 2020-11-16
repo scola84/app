@@ -1,8 +1,8 @@
+import { FastifyInstance } from 'fastify'
 import { Profile } from '../../../entities'
-import { ServiceHelpers } from '@scola/lib'
 import multer from 'fastify-multer'
 
-export function post ({ server }: ServiceHelpers): void {
+export function post (server: FastifyInstance): void {
   server.route({
     handler: async (request, reply) => {
       console.log(request.body)

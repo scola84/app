@@ -1,4 +1,4 @@
-import { ServiceHelpers } from '@scola/lib'
+import { FastifyInstance } from 'fastify'
 
 interface RequestInterface {
   Querystring?: {
@@ -11,7 +11,7 @@ interface RequestInterface {
   }
 }
 
-export function getList ({ server }: ServiceHelpers): void {
+export function getList (server: FastifyInstance): void {
   server.route<RequestInterface>({
     handler: async (request) => {
       return new Promise((resolve) => {
